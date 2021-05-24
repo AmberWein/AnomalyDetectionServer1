@@ -1,0 +1,36 @@
+<!-- <!DOCTYPE html> -->
+<html lang="en">
+
+  <!-- <head>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+  </head> -->
+  <%- include("./partials/head.ejs") %>
+  <body>
+    <br><br>
+      <div class="container">
+          <form action="/uploadfile" id="post" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+              <label for="file1">Upload File 1:</label>
+              <br>
+              <input type="file" name="file1" id="" required class="form-control">
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="file2">Upload File 2:</label>
+                <br>
+                <input type="file" name="file2" id="" required class="form-control">
+              </div>
+              <div class="form-group">
+                  <button>
+                      Upload
+                  </button>
+              </div>
+        </form>
+      </div>
+      <%- include("./partials/footer.ejs") %>
+</body>
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+</html>
