@@ -1,5 +1,4 @@
 const express = require('express')
-const fileUpload = require('express-fileupload')
 
 const multer = require('multer');
 
@@ -38,12 +37,13 @@ app.post('/uploadfile', multipleUploads, (req, res) => {
    // check if successfully uploaded
   
     if (req.files) {
-        console.log("files uploaded")
+        console.log("files uploaded", req.files['file1'][0].path)
       
-        let algo = req.body.algo_choice      
+        let algo = req.body.algo_choice     
         
-        let result = model.findAnomalies(req.files.file1, req.files.file2, algo)
+       let result = model.findAnomalies(req.files['file1'][0].path, req.files['file2'][0].path, algo)
         res.write(result)
+       // res.json({ body : 0 })
     }
     res.end()
 })
