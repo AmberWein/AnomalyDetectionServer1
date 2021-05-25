@@ -1,5 +1,7 @@
+const fs = require('fs')
 function findAnomalies(train, anomaly, algo) {
-    console.log("files uploaded", train)
+   // let x = train.data.toString()
+
 
 
     let result = algo
