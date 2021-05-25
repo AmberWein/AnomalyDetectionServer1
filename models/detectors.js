@@ -1,5 +1,6 @@
 const Util = require('./anomaly_detection_util.js');
 const TimeSeries = require('./parse_file.js')
+//const Math = require('../Math');
 
 class AnomalyReport{
 	constructor(description, timeStep){
@@ -57,9 +58,10 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
         }
 		
 		// detect
-		let cfIndex, reports = [], currLine = [], numOfFeatures = timeSDetect.getNumOfFeatures();
-		let numOfCorrlatedFeatures = cf.length, timeStep=1, numOfRows = timeSDetect.getNumOfRows();
-		let couples = this.getCouples(features, numOfFeatures);
+		let cfIndex, reports = [], currLine = [];
+		numOfFeatures = timeSDetect.getNumOfFeatures();
+		let numOfCorrlatedFeatures = this.cf.length, timeStep=1, numOfRows = timeSDetect.getNumOfRows();
+		let couples = this.getCouples(timeSDetect.headers, numOfFeatures);
 		// run seperately over each line of ts
 		for (let line = 0; line < numOfRows; line++){
 			currLine = timeSDetect.getFlightLine(line); // no such??
@@ -127,7 +129,7 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 		let cfSize = this.getCFsize();
 		for (let i = 0; i < cfSize; i++){
 			///if (tag.compare(cf[i].feature1)==0){
-			if (tag === cf[i].feature1){
+			if (tag === this.cf[i].feature1){
 				return i;
 			}
 		}
@@ -188,15 +190,15 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 		// go over features
 		for (let i = 0; i < numOfFeatures; i++){
 			if (couples[i] != (-1)){		
-				cfIndex = getIndexAsFeature1(features[i]);
+				cfIndex = this.getIndexAsFeature1(ts.headers[i]);
 				// detect only Simple Coorrelation anomalies
-				if (!isSimpleCorrelation(cfIndex))
+				if (!this.isSimpleCorrelation(cfIndex))
 					continue;
 				let p = new Util.Point (line[i], line[couples[i]]);
 				let deviation= Util.dev (p, this.cf[cfIndex].lin_reg);
 				// if deviation is above threshold report an anomaly
 				if (Math.abs(deviation) > this.cf[cfIndex].threshold)
-				reportAnAnomaly(features, i, couples[i], timeStep, reports);
+				this.reportAnAnomaly(ts.headers, i, couples[i], timeStep, reports);
 			}
 		}
 	}

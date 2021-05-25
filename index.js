@@ -3,11 +3,18 @@ const express = require('express')
 const multer = require('multer');
 
 const path = require('path');
+const det = require('./models/detectors.js')
 
 const app = express()
+
+let Detector = new det.SimpleAnomalyDetector('C:\\Users\\NicoleS\\Downloads\\reg_flight_with.csv', 'C:\\Users\\NicoleS\\Downloads\\anomaly_flight.csv');
+console.log(Detector.anomalies);
+
 app.use(express.static('public'));
 
 app.set('view engine', 'ejs')
+
+
 
 const PORT = process.env.PORT || 8080
 
