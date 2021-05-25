@@ -10,8 +10,8 @@ const app = express()
 
 
 /// Amber -- ! should pass to detector ( or some other being=, not yet known) the paths to learn and detect flights
-//let Detector = new det.SimpleAnomalyDetector('C:\\Users\\NicoleS\\Downloads\\reg_flight_with.csv', 'C:\\Users\\NicoleS\\Downloads\\anomaly_flight.csv');
-//console.log(Detector.anomalies);
+let Detector = new det.HybridAnomalyDetector('C:\\Users\\NicoleS\\Downloads\\reg_short.csv', 'C:\\Users\\NicoleS\\Downloads\\anomaly_short.csv');
+console.log(Detector.cf);
 /// ******* this should not be here, was only added to check if working. 
 
 app.use(express.static('public'));

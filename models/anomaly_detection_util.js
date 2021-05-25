@@ -60,7 +60,11 @@ function cov(x, y, size){
     return (s / size);
 }
 function pearson(x, y, size){
-	return (cov(x, y, size) / (Math.sqrt(variance(x, size)) * Math.sqrt(variance(y, size))));
+    let denominator = Math.sqrt(variance(x, size)) * Math.sqrt(variance(y, size))
+    if (denominator == 0)
+        return 0;
+    return cov(x, y, size) / denominator;
+	//return (cov(x, y, size) / (Math.sqrt(variance(x, size)) * Math.sqrt(variance(y, size))));
 }
 function linear_reg(points, size){
     let xArray = [], yArray = [];
