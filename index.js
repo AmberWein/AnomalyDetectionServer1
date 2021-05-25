@@ -1,12 +1,17 @@
 const express = require('express')
+const fileUpload = require('express-fileupload')
 
 const multer = require('multer');
 
 const path = require('path');
 
 const app = express()
+app.use(express.urlencoded({
+    extended: false
+}))
+//app.use(fileUpload({}))
 app.use(express.static('public'));
-
+const model = require('./models/find_anomalies')
 app.set('view engine', 'ejs')
 
 const PORT = process.env.PORT || 8080
@@ -31,9 +36,16 @@ var multipleUploads = upload.fields([{name: 'file1'}, {name: 'file2'}])
 // make a post request to upload
 app.post('/uploadfile', multipleUploads, (req, res) => {
    // check if successfully uploaded
-    if(req.files) {
+  
+    if (req.files) {
         console.log("files uploaded")
+      
+        let algo = req.body.algo_choice      
+        
+        let result = model.findAnomalies(req.files.file1, req.files.file2, algo)
+        res.write(result)
     }
+    res.end()
 })
 
 app.listen(PORT, () =>{
