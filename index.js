@@ -3,12 +3,16 @@ const express = require('express')
 const multer = require('multer');
 
 const path = require('path');
-const det = require('./models/detectors.js')
+
+const det = require('./models/detectors.js') // this is probably not needed here, but the controller that will pass on the paths
 
 const app = express()
 
-let Detector = new det.SimpleAnomalyDetector('C:\\Users\\NicoleS\\Downloads\\reg_flight_with.csv', 'C:\\Users\\NicoleS\\Downloads\\anomaly_flight.csv');
-console.log(Detector.anomalies);
+
+/// Amber -- ! should pass to detector ( or some other being=, not yet known) the paths to learn and detect flights
+//let Detector = new det.SimpleAnomalyDetector('C:\\Users\\NicoleS\\Downloads\\reg_flight_with.csv', 'C:\\Users\\NicoleS\\Downloads\\anomaly_flight.csv');
+//console.log(Detector.anomalies);
+/// ******* this should not be here, was only added to check if working. 
 
 app.use(express.static('public'));
 
