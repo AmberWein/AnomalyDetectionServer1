@@ -38,7 +38,15 @@
               </div>
         </form>
       </div>
-      <%- include("./partials/footer.ejs") %>
+      <form>
+      
+        <div>
+          <code><pre><%=JSON.stringify(JSON.parse(jsonData), null, 3) %></pre></code>
+        </div>
+        <br />
+   
+</form>
+        <%- include("./partials/footer.ejs") %>
 </body>
   <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
 </html>
