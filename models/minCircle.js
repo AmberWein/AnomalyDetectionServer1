@@ -9,14 +9,14 @@ class Circle {
         this.radius = r;
     }
 }
-
+function dist(p1, p2) {
+    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+}
 /*
 function distance(p1, p2) {
     return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
 }
-function dist(p1, p2) {
-    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
-}
+
 
 function defineCircleByTwoPoints(p1, p2) {
     let diameter = distance(p1, p2);
@@ -120,3 +120,4 @@ function findMinCircle(points){
 
 module.exports.Circle = Circle;
 module.exports.findMinCircle = findMinCircle;
+module.exports.dist = dist;

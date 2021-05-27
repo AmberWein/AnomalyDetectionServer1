@@ -126,7 +126,7 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 			
 			//let p = new Util.Point(f1Data[i], f2Data[i]);
 			//points.push(p);
-			points.push({x:f1Data[i], y:f2Data[i]});
+			points.push({x: Number(f1Data[i]), y: Number(f2Data[i])});
 		}
 		return points;
 	}
@@ -246,6 +246,20 @@ class HybridAnomalyDetector extends SimpleAnomalyDetector{
 			couples[toCheck[i]]=f2;
 		}
 		
+		// detect
+		let cfIndex, reports = [], currLine = [];
+		let numOfFeatures = timeSDetect.getNumOfFeatures();
+		let numOfCorrlatedFeatures = this.cf.length, timeStep=1, numOfRows = timeSDetect.getNumOfRows();
+	//	couples = this.getCouples(timeSDetect.headers, numOfFeatures);
+		// run seperately over each line of ts
+		for (let line = 0; line < numOfRows; line++){
+			currLine = timeSDetect.getFlightLine(line); // no such??
+			// for each feature - if it is normaly correlated to another feature, check for anomalies
+			this.getAnomalies(timeSDetect, currLine, timeStep, reports, couples);
+			timeStep++;
+		}
+		this.anomalies = reports;
+
 	}
 	
 	
@@ -305,11 +319,11 @@ class HybridAnomalyDetector extends SimpleAnomalyDetector{
 				}
 				// detect only Circle Correlation anomalies
 				else {
-					let d = dist(p, this.cf[cfIndex].center);
+					let d = EnclosingCircle.dist(p, this.cf[cfIndex].center);
 					let thresh = this.cf[cfIndex].threshold;
 					if (d > thresh){
 						// report an anomaly
-						reportAnAnomaly(ts.headers, i, couples[i], timeStep, reports);
+						this.reportAnAnomaly(ts.headers, i, couples[i], timeStep, reports);
 					}
 				}
 			}
