@@ -4,15 +4,21 @@ const multer = require('multer');
 
 const path = require('path');
 
+//const det = require('./models/detectors.js') // this is probably not needed here, but the controller that will pass on the paths
+
 const app = express()
+
 const fs = require('fs')
 app.use(express.urlencoded({
     extended: false
 }))
 //app.use(fileUpload({}))
+
 app.use(express.static('public'));
 const model = require('./models/find_anomalies')
 app.set('view engine', 'ejs')
+
+
 
 const PORT = process.env.PORT || 8080
 

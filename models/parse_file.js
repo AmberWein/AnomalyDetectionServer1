@@ -40,6 +40,14 @@ class TimeSeries{
      getNumOfRows(){
           return this.data[0].length;
      }
+     getFlightLine(index){
+          let lineDetails = [];
+          let numOfFeaturs = this.getNumOfFeatures();
+          for (let i = 0; i < numOfFeaturs; i++){
+              lineDetails.push(this.data[i][index]);
+          }
+          return lineDetails;
+      }
     /* getHeaders(){
           let reader = fs.readFileSync(this.csvPath);
           // Convert the data to String and        // split it in an array

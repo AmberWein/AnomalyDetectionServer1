@@ -1,4 +1,4 @@
-const Math = require('Math');
+const Math = require('mathjs');
 
 
 class Line{
@@ -48,7 +48,7 @@ function avg(x, size){
 function variance(x, size){
     let s = sum(x, size);
     let dSum = sumOfDoubles(x, size);
-    return ((dSum/size) - Math.pow(s/size,2));
+    return ((dSum/size) - Math.pow((s/size),2));
 }
 function cov(x, y, size){
     let avgX = avg(x, size);
@@ -60,7 +60,11 @@ function cov(x, y, size){
     return (s / size);
 }
 function pearson(x, y, size){
-	return (cov(x, y, size) / (Math.sqrt(variance(x, size)) * Math.sqrt(variance(y, size))));
+    let denominator = Math.sqrt(variance(x, size)) * Math.sqrt(variance(y, size))
+    if (denominator == 0)
+        return 0;
+    return cov(x, y, size) / denominator;
+	//return (cov(x, y, size) / (Math.sqrt(variance(x, size)) * Math.sqrt(variance(y, size))));
 }
 function linear_reg(points, size){
     let xArray = [], yArray = [];

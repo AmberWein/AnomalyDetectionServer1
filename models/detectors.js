@@ -1,5 +1,8 @@
 const Util = require('./anomaly_detection_util.js');
+const { prototype } = require('./parse_file.js');
 const TimeSeries = require('./parse_file.js')
+const EnclosingCircle = require('./minCircle.js');
+const Math = require('mathjs');
 
 class AnomalyReport{
 	constructor(description, timeStep){
@@ -31,7 +34,8 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 	anomalies = [];
 	min_simple_correlation = 0.9;
 	
-	constructor(csvToLearn, csvToDetect = null){
+	constructor(csvToLearn, csvToDetect){
+		// check its valid before starting
 		let timeSLearn = new TimeSeries(csvToLearn);
 		let timeSDetect = new TimeSeries(csvToDetect);
 		// shold we wait?
@@ -59,8 +63,9 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 		// detect
 		let cfIndex, reports = [], currLine = [];
 		numOfFeatures = timeSDetect.getNumOfFeatures();
-		let numOfCorrlatedFeatures = cf.length, timeStep=1, numOfRows = timeSDetect.getNumOfRows();
-		let couples = this.getCouples(features, numOfFeatures);
+		let numOfCorrlatedFeatures = this.cf.length, timeStep=1, numOfRows = timeSDetect.getNumOfRows();
+		let couples = this.getCouples(timeSDetect.headers, numOfFeatures);
+
 		// run seperately over each line of ts
 		for (let line = 0; line < numOfRows; line++){
 			currLine = timeSDetect.getFlightLine(line); // no such??
@@ -128,7 +133,7 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 		let cfSize = this.getCFsize();
 		for (let i = 0; i < cfSize; i++){
 			///if (tag.compare(cf[i].feature1)==0){
-			if (tag === cf[i].feature1){
+			if (tag === this.cf[i].feature1){
 				return i;
 			}
 		}
@@ -189,18 +194,140 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 		// go over features
 		for (let i = 0; i < numOfFeatures; i++){
 			if (couples[i] != (-1)){		
-				cfIndex = getIndexAsFeature1(features[i]);
+				cfIndex = this.getIndexAsFeature1(ts.headers[i]);
 				// detect only Simple Coorrelation anomalies
-				if (!isSimpleCorrelation(cfIndex))
+				if (!this.isSimpleCorrelation(cfIndex))
 					continue;
 				let p = new Util.Point (line[i], line[couples[i]]);
 				let deviation= Util.dev (p, this.cf[cfIndex].lin_reg);
 				// if deviation is above threshold report an anomaly
 				if (Math.abs(deviation) > this.cf[cfIndex].threshold)
-				reportAnAnomaly(features, i, couples[i], timeStep, reports);
+				this.reportAnAnomaly(ts.headers, i, couples[i], timeStep, reports);
 			}
 		}
 	}
 }
 
-module.exports = {AnomalyReport, SimpleAnomalyDetector};
+
+class HybridAnomalyDetector extends SimpleAnomalyDetector{
+	min_hybrid_correlation;
+
+	constructor(csvToLearn, csvToDetect) {
+		super(csvToLearn, csvToDetect); // now cf will be filled with normal reg, anomalies is partly filled aswell (not good?)
+		//check if valid before starting
+		this.min_hybrid_correlation = 0.5;
+		this.min_simple_correlation = 0.9;
+		
+		let timeSLearn = new TimeSeries(csvToLearn);
+		let timeSDetect = new TimeSeries(csvToDetect);
+
+		let f2, num = timeSLearn.getNumOfFeatures(), mininmalCorrelated = [];
+		let couples = this.getCouples(timeSLearn.headers, num);
+			// get Id's of features to be checked for circle correlation
+		let toCheck = this.getUncorrelatedFeatures(couples);
+		for (let i = 0; i < toCheck.length; i++){
+		//for (int f1: toCheck){
+				// if the feature to check is a feature2 in cf then skip it
+			if (this.isSecondFeature(couples, toCheck[i]))
+				continue;
+				// get the feature who is most correlated and passing min corelation
+			f2 = this.getMostCorrelatedFeature(timeSLearn, toCheck[i], this.min_hybrid_correlation);
+				// if no feature passed the min correlation
+			if (f2 == -1)
+				// || isSecondFeature(couples,f2))
+				continue;
+				// create and add to cf a new circle correlated feature
+			this.cf.push(this.createCircleCorrelated(timeSLearn, toCheck[i], f2));
+				// update couples vector to hold the new correlatedFeatures
+			couples[toCheck[i]]=f2;
+		}
+		
+	}
+	
+	
+	isSecondFeature(couples, f2){
+		for (let i = 0; i < couples.length; i++){
+			if (couples[i] == f2)
+				return true;
+		}
+		return false;
+	}
+
+	getUncorrelatedFeatures (couples){
+		let uncorrelated = [];
+		// push into vector, only features which are not feature1 or feature2 in cf
+		for (let i = 0; i < couples.length; i++){
+			if (couples[i] != -1)
+				continue;
+			if (!this.isSecondFeature(couples, i))
+				uncorrelated.push(i);
+		}
+		return uncorrelated;
+	}
+	createCircleCorrelated (ts, f1, f2){
+		let numOfValues = ts.getNumOfRows();
+		// create a vector of points, where feature1 data are the x's, and feature2 data are the y's
+		let points = this.createPointsVec(ts.data[f1], ts.data[f2], numOfValues);		
+		
+		// find the minimal-radius circle which hold all the points
+		let c = EnclosingCircle.findMinCircle(points ,points.length); // Circle 
+		let p = new Util.Point(c.center.x, c.center.y);
+		// the threshold should allow some freedom of correlation
+		let thresh = 1.1 * c.radius;
+		let correlation = this.getCorrelation(f1, f2, ts.data, numOfValues);
+		// create a default line
+		let line = new Util.Line();
+		// create a correlatedFeatures object for this 2 correlated features
+		let currMatch = new CorrelatedFeatures (ts.headers[f1], ts.headers[f2], correlation, line, thresh, false, p);
+
+		return currMatch;
+	}
+
+	getAnomalies(ts, line, timeStep, reports, couples){
+		let cfIndex, numOfFeatures = ts.getNumOfFeatures();
+		// go over features
+		for (let i = 0; i < numOfFeatures; i++){
+			// if this feature is correlated to another one - check that this flight line is not an anomaly
+			if (couples[i] != (-1)){		
+				cfIndex = this.getIndexAsFeature1 (ts.headers[i]);
+				let p = new Util.Point(line[i], line[couples[i]]);
+				// detect only Simple Correlation anomalies
+				if (this.isSimpleCorrelation(cfIndex)){
+					let deviation = Util.dev(p, this.cf[cfIndex].lin_reg);
+					if (Math.abs(deviation) > this.cf[cfIndex].threshold){
+						// report an anomaly
+						this.reportAnAnomaly(ts.headers, i, couples[i], timeStep, reports);
+					}
+				}
+				// detect only Circle Correlation anomalies
+				else {
+					let d = dist(p, this.cf[cfIndex].center);
+					let thresh = this.cf[cfIndex].threshold;
+					if (d > thresh){
+						// report an anomaly
+						reportAnAnomaly(ts.headers, i, couples[i], timeStep, reports);
+					}
+				}
+			}
+		}
+	}
+	getMinSimpleCorrelation(){
+		return this.min_simple_correlation;
+	}
+	setMinSimpleCorrelation(newMin){
+		this.min_simple_correlation = newMin;
+	}
+
+	getMinCircleCorrelation(){
+		return this.min_hybrid_correlation;
+	}
+	setMinCircleCorrelation(newMin){
+		this.min_hybrid_correlation = newMin;
+	}
+}
+
+
+module.exports.SimpleAnomalyDetector = SimpleAnomalyDetector;
+module.exports.HybridAnomalyDetector = HybridAnomalyDetector;
+module.exports.AnomalyReport = AnomalyReport;
+
