@@ -57,7 +57,8 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
         }
 		
 		// detect
-		let cfIndex, reports = [], currLine = [], numOfFeatures = timeSDetect.getNumOfFeatures();
+		let cfIndex, reports = [], currLine = [];
+		numOfFeatures = timeSDetect.getNumOfFeatures();
 		let numOfCorrlatedFeatures = cf.length, timeStep=1, numOfRows = timeSDetect.getNumOfRows();
 		let couples = this.getCouples(features, numOfFeatures);
 		// run seperately over each line of ts
