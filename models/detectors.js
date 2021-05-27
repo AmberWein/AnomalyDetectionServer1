@@ -2,7 +2,7 @@ const Util = require('./anomaly_detection_util.js');
 const { prototype } = require('./parse_file.js');
 const TimeSeries = require('./parse_file.js')
 const EnclosingCircle = require('./minCircle.js');
-//const Math = require('../Math');
+const Math = require('mathjs');
 
 class AnomalyReport{
 	constructor(description, timeStep){

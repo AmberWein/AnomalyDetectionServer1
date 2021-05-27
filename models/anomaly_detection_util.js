@@ -1,4 +1,4 @@
-//const Math = require('../Math');
+const Math = require('mathjs');
 
 
 class Line{
@@ -48,7 +48,7 @@ function avg(x, size){
 function variance(x, size){
     let s = sum(x, size);
     let dSum = sumOfDoubles(x, size);
-    return ((dSum/size) - Math.pow(s/size,2));
+    return ((dSum/size) - Math.pow((s/size),2));
 }
 function cov(x, y, size){
     let avgX = avg(x, size);
