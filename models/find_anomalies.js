@@ -1,13 +1,18 @@
 const fs = require('fs')
 function findAnomalies(train, anomaly, algo) {
-   // let x = train.data.toString()
+    
+    let j = []
+    j.push({
+        description: "files uploaded",
+        timeStep: "3:00"
+    })
+    console.log("pushed")
 
-    console.log("files uploaded", train)
 
+  
 
-    let result = algo
     //here we want to call  relevent function 
-    return result
+    return j
 }
 //export file to module
 module.exports.findAnomalies = findAnomalies
