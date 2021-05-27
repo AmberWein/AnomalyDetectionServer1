@@ -189,7 +189,7 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 		return currMatch;
 	}
 	reportAnAnomaly(features, f1, f2, timeStep, reports){
-		let description = features[f1] + "+" + features[f2];
+		let description = features[f1] + " + " + features[f2];
 		let repo = new AnomalyReport (description,timeStep);
 		reports.push(repo);
 	}
