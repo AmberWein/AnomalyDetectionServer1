@@ -65,6 +65,7 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 		numOfFeatures = timeSDetect.getNumOfFeatures();
 		let numOfCorrlatedFeatures = this.cf.length, timeStep=1, numOfRows = timeSDetect.getNumOfRows();
 		let couples = this.getCouples(timeSDetect.headers, numOfFeatures);
+
 		// run seperately over each line of ts
 		for (let line = 0; line < numOfRows; line++){
 			currLine = timeSDetect.getFlightLine(line); // no such??
