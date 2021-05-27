@@ -23,14 +23,30 @@
                 <br>
                 <input type="file" name="file2" id="" required class="form-control">
               </div>
-              <div class="form-group">
+              <div class="form-group" >             
+                  <select class="algo_choice" name="algo_choice" required class="form-control">
+                    <option name="" value="" selected>Select Algorithm</option>
+                    <option name="Circle" value="Circle">Circle</option>
+                    <option name="Line" value="Line">Line</option>
+                   
+                </select>
+
+
                   <button>
                       Upload
                   </button>
               </div>
         </form>
       </div>
-      <%- include("./partials/footer.ejs") %>
+      <form>
+      
+        <div>
+          <code><pre><%=JSON.stringify(jsonData)%></pre></code>
+        </div>
+        <br />
+   
+</form>
+        <%- include("./partials/footer.ejs") %>
 </body>
   <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
 </html>
