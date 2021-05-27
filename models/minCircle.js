@@ -2,8 +2,8 @@ const enclosingCircle = require('smallest-enclosing-circle')
 const Util = require('./anomaly_detection_util.js')
 
 class Circle {
-    center;
-    radius;
+    // center;
+    // radius;
     constructor(c, r) {
         this.center = c;
         this.radius = r;
