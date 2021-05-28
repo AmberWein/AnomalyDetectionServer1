@@ -30,11 +30,14 @@ class CorrelatedFeatures{
 
 class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 	// class members
-	cf = [];
-	anomalies = [];
-	min_simple_correlation = 0.9;
+	//cf = [];
+	//anomalies = [];
+	//min_simple_correlation = 0.9;
 	
 	constructor(csvToLearn, csvToDetect){
+		this.cf = []
+		this.anomalies = [];
+		this.min_simple_correlation = 0.9;
 		// check its valid before starting
 		let timeSLearn = new TimeSeries(csvToLearn);
 		let timeSDetect = new TimeSeries(csvToDetect);
@@ -121,8 +124,10 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 	createPointsVec(f1Data, f2Data, size){
 		let points = [];
 		for (let i=0; i<size; i++){
-			let p = new Util.Point(f1Data[i], f2Data[i]);
-			points.push(p);
+			
+			//let p = new Util.Point(f1Data[i], f2Data[i]);
+			//points.push(p);
+			points.push({x: Number(f1Data[i]), y: Number(f2Data[i])});
 		}
 		return points;
 	}
@@ -185,7 +190,7 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 		return currMatch;
 	}
 	reportAnAnomaly(features, f1, f2, timeStep, reports){
-		let description = features[f1] + "-" + features[f2];
+		let description = features[f1] + " + " + features[f2];
 		let repo = new AnomalyReport (description,timeStep);
 		reports.push(repo);
 	}
@@ -210,7 +215,7 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 
 
 class HybridAnomalyDetector extends SimpleAnomalyDetector{
-	min_hybrid_correlation;
+//	min_hybrid_correlation;
 
 	constructor(csvToLearn, csvToDetect) {
 		super(csvToLearn, csvToDetect); // now cf will be filled with normal reg, anomalies is partly filled aswell (not good?)
@@ -242,6 +247,20 @@ class HybridAnomalyDetector extends SimpleAnomalyDetector{
 			couples[toCheck[i]]=f2;
 		}
 		
+		// detect
+		let cfIndex, reports = [], currLine = [];
+		let numOfFeatures = timeSDetect.getNumOfFeatures();
+		let numOfCorrlatedFeatures = this.cf.length, timeStep=1, numOfRows = timeSDetect.getNumOfRows();
+	//	couples = this.getCouples(timeSDetect.headers, numOfFeatures);
+		// run seperately over each line of ts
+		for (let line = 0; line < numOfRows; line++){
+			currLine = timeSDetect.getFlightLine(line); // no such??
+			// for each feature - if it is normaly correlated to another feature, check for anomalies
+			this.getAnomalies(timeSDetect, currLine, timeStep, reports, couples);
+			timeStep++;
+		}
+		this.anomalies = reports;
+
 	}
 	
 	
@@ -270,7 +289,7 @@ class HybridAnomalyDetector extends SimpleAnomalyDetector{
 		let points = this.createPointsVec(ts.data[f1], ts.data[f2], numOfValues);		
 		
 		// find the minimal-radius circle which hold all the points
-		let c = EnclosingCircle.findMinCircle(points ,points.length); // Circle 
+		let c = EnclosingCircle.findMinCircle(points)// ,points.length); // Circle 
 		let p = new Util.Point(c.center.x, c.center.y);
 		// the threshold should allow some freedom of correlation
 		let thresh = 1.1 * c.radius;
@@ -301,11 +320,11 @@ class HybridAnomalyDetector extends SimpleAnomalyDetector{
 				}
 				// detect only Circle Correlation anomalies
 				else {
-					let d = dist(p, this.cf[cfIndex].center);
+					let d = EnclosingCircle.dist(p, this.cf[cfIndex].center);
 					let thresh = this.cf[cfIndex].threshold;
 					if (d > thresh){
 						// report an anomaly
-						reportAnAnomaly(ts.headers, i, couples[i], timeStep, reports);
+						this.reportAnAnomaly(ts.headers, i, couples[i], timeStep, reports);
 					}
 				}
 			}
