@@ -4,12 +4,8 @@ const multer = require('multer');
 
 const path = require('path');
 
-
 const app = express()
 
-
-
-const fs = require('fs')
 app.use(express.urlencoded({
     extended: false
 }))
@@ -20,8 +16,7 @@ app.use(express.static('public'));
 const model = require('./models/find_anomalies')
 app.set('view engine', 'ejs')
 
-
-
+// define a port to whoch the app is listening to
 const PORT = process.env.PORT || 8080
 
 // home page render
@@ -33,15 +28,8 @@ app.get('/', (req, res) => {
         description: "no results yet",
         timeStep: "3:00"
     })
-  
-     
         res.render("index", { jsonData: jsonData })
-    
     })
- 
-  
-
-
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -65,17 +53,12 @@ app.post('/detect', multipleUploads, (req, res) => {
         let algo = req.body.algo_choice     
         const result = model.findAnomalies(req.files['trainFile'][0].path, req.files['testFile'][0].path, algo)
         res.send({jsonData : result})
-      
    //     res.send(html of result?)
-
-       
     }
     res.end()
 })
 
-
-
-
+// app is listening to port 8080
 app.listen(PORT, () =>{
     console.log('App is listening...')
 })

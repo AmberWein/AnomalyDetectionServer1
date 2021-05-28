@@ -1,25 +1,17 @@
-<!-- <!DOCTYPE html> -->
 <html lang="en">
-
-  <!-- <head>
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-    />
-  </head> -->
   <%- include("./partials/head.ejs") %>
   <body>
     <br><br>
       <div class="container">
           <form action="/detect" id="post" method="post" enctype="multipart/form-data">
             <div class="form-group">
-              <label for="trainFile">Upload File 1:</label>
+              <label for="trainFile">Choose a train file:</label>
               <br>
               <input type="file" name="trainFile" id="" required class="form-control">
             </div>
             <br>
             <div class="form-group">
-                <label for="testFile">Upload File 2:</label>
+                <label for="testFile">Choose a test file:</label>
                 <br>
                 <input type="file" name="testFile" id="" required class="form-control">
               </div>
@@ -48,5 +40,4 @@
 </form>
         <%- include("./partials/footer.ejs") %>
 </body>
-  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
 </html>
