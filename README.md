@@ -3,9 +3,12 @@ A web application to detect a flight's anomalies, at Advanced Programming 2nd co
 Created by: Nicole Sharabany, Amber Weiner and Avia wolf.
 
 ## Overview and Features:
-The program features a convenient user interface to upload a csv file he wishes to train, and another csv file with possible anomalies.  
-The user choose an anomaly detection algorithm which proccess the uploaded data.
+The program features a convenient user interface, that supports two options for the user: 
+1. Upload a csv file that he wants to train, and another csv file with possible anomalies.    
+The user choose an anomaly detection algorithm (one from two available options- a simple one based on regression line and a hybrid one based on min circle) which proccess the uploaded data.  
 When the user press the "Upload" button, the algorithm's results are presented.  
+2. Write a code that sends an http POST request to the domain http://localhost/8080/detect/ with a json file.  
+Run it and get back a Json file with the anomalies detected in the given file (if there are any).  
 Our app using JavaScript, HTML, EJS and CSS with the MVC design pattern.  
 The project is divided into four main parts:  
 1. The client side.
@@ -34,11 +37,21 @@ That's all, now we are ready to start!
 
 ## Manual:
 1. Download the repository.
-2. Run the app.
-3. Open a browser and enter http://localhost:8080/ in the address line.
-4. The app is on, you can choose two CSV files, one for leraning and another for detection, and select an anomaly detection algorithm you wish to use in order to detect the anomalies.  
-Notice: there are two options available- a simple one based on regression line and a hybrid one based on min circle.
-5. Press the "Upload" button to upload your selection and get the results.
+2. Run the app (from the directory where you saved the project) by using "node app" in the cmd.  
+Notice: if the app is succesfully ruמning you should see "App is listening.." in the cmd.
+4. Open a browser and enter http://localhost:8080/ in the address line.
+5. The app is on, feel free to try to use it!
+
+## project's structure:
+### Model:
+Responsible for the logic part of the application. It gets (from the controller) the user's selection of two CSV files, one for leraning and another for detection, and an anomaly detection algorithm he wishes to use in order to detect the anomalies. After the information is given, the model finds anomalies in the given file (if there are any). Then, the result are sent back to the controller.
+
+### controller:
+Gets an http request from the user,using what the user has chosen and send them to the model.  
+After the model have detected the anomalies using the given arguments, it returns it to the controller which sends it to the view for represting.
+
+### View:
+For any representation of information in our site. It's porpuse is to make the detection's results more accesible.  
 
 ## The API:
 GET / - this path representing the home page of the app in which the user can upload 2 csv files and choose an anomaly detection algorithm.  
