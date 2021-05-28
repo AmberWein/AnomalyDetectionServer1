@@ -21,6 +21,14 @@ Our project is organized in five folders:
 4. public- contains styles.css which define a style for the entire project.
 5. uploads- contains csv files that the client chose to upload.
 
+## Manual:
+1. Download the repository.
+2. Run the app.
+3. Open a browser and enter http://localhost:8080/ in the address line.
+4. The app is on, you can choose two CSV files, one for leraning and another for detection, and select an anomaly detection algorithm you wish to use in order to detect the anomalies.  
+Notice: there are two options available- a simple one based on regression line and a hybrid one based on min circle.
+5. Press the "Upload" button to upload your selection and get the results.
+
 ## The API:
 GET / - this path representing the home page of the app in which the user can upload 2 csv files and choose an anomaly detection algorithm.  
 In addition, after uplouding, on the right hand side the algorithm's results are presented.  
