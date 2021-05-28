@@ -4,17 +4,19 @@ const TimeSeries = require('./parse_file.js')
 const EnclosingCircle = require('./minCircle.js');
 const Math = require('mathjs');
 
+// AnomalyReport object holds decription and a timestep
 class AnomalyReport{
 	constructor(description, timeStep){
         this.description = description;
         this.timeStep = timeStep;
     }
 }
-/*class TimeSeriesAnomalyDetector {
-	learnNormal(ts);
-	detect(ts);
-}*/
-
+/* CorrelatedFeatures object holds 2 feature names, the correlation between them
+* and the threshold from their regresion line
+* they also hold an indicator for simple or hybrid correlation, and a point that is null
+* if the correlation is simple, or otherwise the center point of the minimal enclosing circle
+* that holds them
+*/
 class CorrelatedFeatures{
 	constructor (f1, f2, corr, line, thresh, isSimp, c = null){
 		this.feature1=f1;
@@ -26,27 +28,21 @@ class CorrelatedFeatures{
 		this.center=c;
 	}
 }
-	
-
-class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
-	// class members
-	//cf = [];
-	//anomalies = [];
-	//min_simple_correlation = 0.9;
-	
+/* SimpleAnomalyDetector object holds an array of correlated featuers, extracted from a regular flight,
+*  an array of anomalies, extracted from a different flight, and the minimum value for simple correlation.
+*/
+class SimpleAnomalyDetector {
 	constructor(csvToLearn, csvToDetect){
 		this.cf = []
 		this.anomalies = [];
 		this.min_simple_correlation = 0.9;
-		// check its valid before starting
+		// check its valid before starting??
+		// create TimeSeries from the two files given
 		let timeSLearn = new TimeSeries(csvToLearn);
 		let timeSDetect = new TimeSeries(csvToDetect);
-		// shold we wait?
-		let maxPearson, curr, thresh, matchedProperty, matches = [];
-        //let headlines = ts.headlines;
-        //let mapValues = ts.data;
+		let matchedProperty, matches = [];
         let numOfFeatures = timeSLearn.getNumOfFeatures();
-        let numOfValues = timeSLearn.getNumOfRows(); // maybe should check [0] exists before
+        
         // for every feature, find the feature that it is most correlated to
         for (let f1 = 0; f1 < numOfFeatures; f1++){
             matches.push(-1);
@@ -57,19 +53,19 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
             }
             // if the matched feature is not yet checked, or is most correlated to a different feature- add a new correlatedFeatures
             if (matches.length <= matchedProperty || matches[matchedProperty] != f1){
-               this.cf.push(this.createCorrelated(timeSLearn,f1,matchedProperty));
+            	this.cf.push(this.createCorrelated(timeSLearn,f1,matchedProperty));
                 // update the match that was found
                 matches[f1] = matchedProperty;
             }		
         }
 		
-		// detect
-		let cfIndex, reports = [], currLine = [];
+		// detect anomalies
+		let reports = [], currLine = [];
 		numOfFeatures = timeSDetect.getNumOfFeatures();
-		let numOfCorrlatedFeatures = this.cf.length, timeStep=1, numOfRows = timeSDetect.getNumOfRows();
+		let timeStep=1, numOfRows = timeSDetect.getNumOfRows();
 		let couples = this.getCouples(timeSDetect.headers, numOfFeatures);
 
-		// run seperately over each line of ts
+		// run seperately over each line of timeSDetect
 		for (let line = 0; line < numOfRows; line++){
 			currLine = timeSDetect.getFlightLine(line); // no such??
 			// for each feature - if it is normaly correlated to another feature, check for anomalies
@@ -83,6 +79,7 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 		this.min_simple_correlation = newCorr;
 		return;
 	}
+
 	getMostCorrelatedFeature (ts, feature1, minCorrelation){
 		let matchedProperty, corr, maxPearson=0.0, num=ts.getNumOfFeatures(), numOfValues= ts.getNumOfRows();
 		// run over features
@@ -97,7 +94,7 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 				matchedProperty = f2;
 			}
 		}
-		// if the maimum correlation above minumum, return the most correlated feature 
+		// if the maximum correlation is above minimum value, return the most correlated feature 
 		if (maxPearson >= minCorrelation)
 			return matchedProperty;
 		// return -1 if no features is above the minimum correlation
@@ -124,9 +121,6 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 	createPointsVec(f1Data, f2Data, size){
 		let points = [];
 		for (let i=0; i<size; i++){
-			
-			//let p = new Util.Point(f1Data[i], f2Data[i]);
-			//points.push(p);
 			points.push({x: Number(f1Data[i]), y: Number(f2Data[i])});
 		}
 		return points;
@@ -137,7 +131,6 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 	getIndexAsFeature1(tag){
 		let cfSize = this.getCFsize();
 		for (let i = 0; i < cfSize; i++){
-			///if (tag.compare(cf[i].feature1)==0){
 			if (tag === this.cf[i].feature1){
 				return i;
 			}
@@ -177,15 +170,11 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 	createCorrelated(ts, f1, f2){
 		let numOfValues = ts.getNumOfRows();
 		let points = this.createPointsVec(ts.data[f1], ts.data[f2], numOfValues);		
-		//Point** pointsArray = points.data();
-		//let line = linear_reg(pointsArray,numOfValues);
 		let line = Util.linear_reg(points, numOfValues);
 		let thresh = this.findThreshold(points, numOfValues, line);
 		let correlation = this.getCorrelation(f1, f2, ts.data, numOfValues);
 		// create a simple correlatedFeatures object for this 2 correlated features (defined by regresion line)
 		let currMatch = new CorrelatedFeatures(ts.headers[f1], ts.headers[f2], correlation, line, thresh, true);
-		// destroy all points that were created to define regresion line and threshold
-		//destroyAllPoints(points, numOfValues);
 		// return the new correlatedFeatures
 		return currMatch;
 	}
@@ -213,45 +202,43 @@ class SimpleAnomalyDetector {//extends TimeSeriesAnomalyDetector{
 	}
 }
 
-
+/* HybridAnomalyDetector object holds an array of correlated featuers, extracted from a regular flight,
+*  an array of anomalies, extracted from a different flight, and the minimum value for simple correlation.
+*/
 class HybridAnomalyDetector extends SimpleAnomalyDetector{
-//	min_hybrid_correlation;
-
 	constructor(csvToLearn, csvToDetect) {
-		super(csvToLearn, csvToDetect); // now cf will be filled with normal reg, anomalies is partly filled aswell (not good?)
-		//check if valid before starting
+		// now cf will be filled with normal correlation data
+		super(csvToLearn, csvToDetect); 
+		//check if valid before starting??
 		this.min_hybrid_correlation = 0.5;
 		this.min_simple_correlation = 0.9;
-		
+		// create TimeSeries from the two files given
 		let timeSLearn = new TimeSeries(csvToLearn);
 		let timeSDetect = new TimeSeries(csvToDetect);
 
-		let f2, num = timeSLearn.getNumOfFeatures(), mininmalCorrelated = [];
+		let f2, num = timeSLearn.getNumOfFeatures();
 		let couples = this.getCouples(timeSLearn.headers, num);
-			// get Id's of features to be checked for circle correlation
+		// get Id's of features to be checked for circle correlation
 		let toCheck = this.getUncorrelatedFeatures(couples);
 		for (let i = 0; i < toCheck.length; i++){
-		//for (int f1: toCheck){
-				// if the feature to check is a feature2 in cf then skip it
+			// if the feature to check is a feature2 in cf then skip it
 			if (this.isSecondFeature(couples, toCheck[i]))
 				continue;
-				// get the feature who is most correlated and passing min corelation
+			// get the feature who is most correlated and passing min corelation
 			f2 = this.getMostCorrelatedFeature(timeSLearn, toCheck[i], this.min_hybrid_correlation);
-				// if no feature passed the min correlation
+			// if no feature passed the min correlation
 			if (f2 == -1)
 				// || isSecondFeature(couples,f2))
 				continue;
-				// create and add to cf a new circle correlated feature
+			// create and add to cf a new circle correlated feature
 			this.cf.push(this.createCircleCorrelated(timeSLearn, toCheck[i], f2));
-				// update couples vector to hold the new correlatedFeatures
+			// update couples vector to hold the new correlatedFeatures
 			couples[toCheck[i]]=f2;
 		}
 		
 		// detect
-		let cfIndex, reports = [], currLine = [];
-		let numOfFeatures = timeSDetect.getNumOfFeatures();
-		let numOfCorrlatedFeatures = this.cf.length, timeStep=1, numOfRows = timeSDetect.getNumOfRows();
-	//	couples = this.getCouples(timeSDetect.headers, numOfFeatures);
+		let reports = [], currLine = [];
+		let timeStep=1, numOfRows = timeSDetect.getNumOfRows();
 		// run seperately over each line of ts
 		for (let line = 0; line < numOfRows; line++){
 			currLine = timeSDetect.getFlightLine(line); // no such??
@@ -260,9 +247,7 @@ class HybridAnomalyDetector extends SimpleAnomalyDetector{
 			timeStep++;
 		}
 		this.anomalies = reports;
-
 	}
-	
 	
 	isSecondFeature(couples, f2){
 		for (let i = 0; i < couples.length; i++){
@@ -286,8 +271,7 @@ class HybridAnomalyDetector extends SimpleAnomalyDetector{
 	createCircleCorrelated (ts, f1, f2){
 		let numOfValues = ts.getNumOfRows();
 		// create a vector of points, where feature1 data are the x's, and feature2 data are the y's
-		let points = this.createPointsVec(ts.data[f1], ts.data[f2], numOfValues);		
-		
+		let points = this.createPointsVec(ts.data[f1], ts.data[f2], numOfValues);			
 		// find the minimal-radius circle which hold all the points
 		let c = EnclosingCircle.findMinCircle(points)// ,points.length); // Circle 
 		let p = new Util.Point(c.center.x, c.center.y);
@@ -345,7 +329,7 @@ class HybridAnomalyDetector extends SimpleAnomalyDetector{
 	}
 }
 
-
+//export moduls of file
 module.exports.SimpleAnomalyDetector = SimpleAnomalyDetector;
 module.exports.HybridAnomalyDetector = HybridAnomalyDetector;
 module.exports.AnomalyReport = AnomalyReport;
