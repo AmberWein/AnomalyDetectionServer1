@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
     
   
      
-        res.render("index", { jsonData: jsonData })
+        res.render("index")
     
     })
  
@@ -56,7 +56,7 @@ var storage = multer.diskStorage({
 var upload = multer({storage: storage});
 var multipleUploads = upload.fields([{name: 'file1'}, {name: 'file2'}])
 // make a post request to upload
-app.post('/uploadfile', multipleUploads, (req, res) => {
+app.post('/detect', multipleUploads, (req, res) => {
    // check if successfully uploaded
   
     if (req.files) {
@@ -72,10 +72,31 @@ app.post('/uploadfile', multipleUploads, (req, res) => {
 
     classes: {table: "table table-striped table-bordered"}
   };
- var table = tabular.html(result, opts);
- res.write(table)
-      
-   //     res.send(html of result?)
+  var table = tabular.html(result, opts);
+  /*
+ var html_show = '<!DOCTYPE html><html lang="en"><body>'
+ 
+ fs.writeFile('./views/anomalies_table.ejs', html_show, function (err,data) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log(data);
+  });
+  fs.writeFile('./views/anomalies_table.ejs', table, function (err,data) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log(data);
+  });
+  var end = '</body></html>'
+  fs.writeFile('./views/anomalies_table.ejs', end, function (err,data) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log(data);
+  })*/
+  res.send(table)
+
 
        
     }

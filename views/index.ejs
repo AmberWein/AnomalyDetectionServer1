@@ -11,7 +11,7 @@
   <body>
     <br><br>
       <div class="container">
-          <form action="/uploadfile" id="post" method="post" enctype="multipart/form-data">
+          <form action="/detect" id="post" method="post" enctype="multipart/form-data">
             <div class="form-group">
               <label for="file1">Upload File 1:</label>
               <br>
@@ -26,8 +26,8 @@
               <div class="form-group" >             
                   <select class="algo_choice" name="algo_choice" required class="form-control">
                     <option name="" value="" selected>Select Algorithm</option>
-                    <option name="Circle" value="Circle">Circle</option>
-                    <option name="Line" value="Line">Line</option>
+                    <option name="Hybrid" value="Hybrid">Hybrid Anomaly Detector</option>
+                    <option name="Simple" value="Simple">Simple Anomaly Detector</option>
                    
                 </select>
 
@@ -40,13 +40,9 @@
       </div>
       <form>
       
-        <div>
-          <code><pre><%=JSON.stringify(jsonData)%></pre></code>
-        </div>
         <br />
-        <iframe id="frame" name="table"></iframe>
-   
 </form>
+
         <%- include("./partials/footer.ejs") %>
 </body>
   <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
