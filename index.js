@@ -48,7 +48,8 @@ app.post('/detect', multipleUploads, (req, res) => {
         let algo = req.body.algo_choice     
         
  const result = model.findAnomalies(req.files['trainFile'][0].path, req.files['testFile'][0].path, algo)
- var opts = {
+ res.send({jsonData : result})
+ /*var opts = {
     dot: "/",
     separator: '  ',
     dateFormatter: function(date) {return date.toISOString().substr(0,10);},
@@ -78,9 +79,9 @@ app.post('/detect', multipleUploads, (req, res) => {
       return console.log(err);
     }
     console.log(data);
-  })*/
+  })
   res.send(table)
-
+*/
    //  res.send({jsonData : result})
 
 
