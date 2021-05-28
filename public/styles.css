@@ -62,7 +62,11 @@
       cursor: pointer;
       text-align: right;
     }
-    .column {
+    .column1 {
       float: left;
-      width: 50%;
+      width: 20%;
+    }
+    .column2 {
+      float: left;
+      width: 80%;
     }
