@@ -21,6 +21,17 @@ Our project is organized in five folders:
 4. public- contains styles.css which define a style for the entire project.
 5. uploads- contains csv files that the client chose to upload.
 
+## Required Installations:
+Before we can run the app, there are some required installations to do, download node.js package and the express package.  
+To do that, please follow the next steps:
+1. Download npm from the internet, you can use this link: https://nodejs.org/en/download/
+2. Open a cmd and press the following commands  
+* "npm init --yes"  
+* "npm i express"  
+* "npm install --save multer"  
+3. Save the project's files on your computer.   
+That's all, now we are ready to start!
+
 ## Manual:
 1. Download the repository.
 2. Run the app.
