@@ -23,3 +23,8 @@ Our project is organized in five folders:
 GET / - this path representing the home page of the app in which the user can upload 2 csv files and choose an anomaly detection algorithm.  
 In addition, after uplouding, on the right hand side the algorithm's results are presented.  
 POST /detect - this path represent that the client have uploaded the required csv files and chose an anomaly detection algorithm.
+
+## The Server:
+The user sends a POST request to the controller which get from the server the detected anomalies according to the given files and the chosen algorithm.  
+When the results from the API server return to the controller, it passes them to the view in order to present them to the user.
+Therefore, the user can observe any anomaly that were found arranged in a table.
