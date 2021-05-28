@@ -5,9 +5,11 @@ const fs = require("fs");
 const Util = require('./anomaly_detection_util.js');
 
 class TimeSeries{
-     headers = null;
-     data = null;
+     // headers = null;
+     // data = null;
      constructor(csvPath){
+          this.headers = null;
+          this.data = null;
           this.csvPath = csvPath;
           let reader = fs.readFileSync(this.csvPath);
           // Convert the data to String and        // split it in an array

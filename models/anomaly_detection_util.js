@@ -60,10 +60,13 @@ function cov(x, y, size){
     return (s / size);
 }
 function pearson(x, y, size){
-    let denominator = Math.sqrt(variance(x, size)) * Math.sqrt(variance(y, size))
-    if (denominator == 0)
+    let varX = variance(x, size), varY = variance(y, size)
+    let denominator = Math.sqrt(varX) * Math.sqrt(varY)
+
+    let covXY = cov(x, y, size)
+    if (denominator == 0 || covXY < Math.pow(10, -5)) // not sure this is actually good..
         return 0;
-    return cov(x, y, size) / denominator;
+    return  covXY / denominator;
 	//return (cov(x, y, size) / (Math.sqrt(variance(x, size)) * Math.sqrt(variance(y, size))));
 }
 function linear_reg(points, size){
