@@ -13,12 +13,13 @@ function findAnomalies(train, anomaly, algo) {
         det = new detector.HybridAnomalyDetector('.\\uploads\\Train_Little.csv', '.\\uploads\\Test_Little.csv') // this probably wont be the name
     // end of switch case
     let j = det.anomalies
+    /*let j = []
 
-    // j.push({
-    //     description: "files uploaded",
-    //     timeStep: "3:00"
-    // })
-    // console.log("pushed")
+     j.push({
+         description: "files uploaded",
+         timeStep: "3:00"
+     })*/
+  //console.log("pushed", j)
 
 
     //here we want to call  relevent function 
