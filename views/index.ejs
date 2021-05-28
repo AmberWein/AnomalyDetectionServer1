@@ -11,17 +11,17 @@
   <body>
     <br><br>
       <div class="container">
-          <form action="/uploadfile" id="post" method="post" enctype="multipart/form-data">
+          <form action="/detect" id="post" method="post" enctype="multipart/form-data">
             <div class="form-group">
-              <label for="file1">Upload File 1:</label>
+              <label for="trainFile">Upload File 1:</label>
               <br>
-              <input type="file" name="file1" id="" required class="form-control">
+              <input type="file" name="trainFile" id="" required class="form-control">
             </div>
             <br>
             <div class="form-group">
-                <label for="file2">Upload File 2:</label>
+                <label for="testFile">Upload File 2:</label>
                 <br>
-                <input type="file" name="file2" id="" required class="form-control">
+                <input type="file" name="testFile" id="" required class="form-control">
               </div>
               <div class="form-group" >             
                   <select class="algo_choice" name="algo_choice" required class="form-control">

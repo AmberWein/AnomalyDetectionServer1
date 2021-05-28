@@ -54,17 +54,17 @@ var storage = multer.diskStorage({
 })
 
 var upload = multer({storage: storage});
-var multipleUploads = upload.fields([{name: 'file1'}, {name: 'file2'}])
+var multipleUploads = upload.fields([{name: 'trainFile'}, {name: 'testFile'}])
 // make a post request to upload
-app.post('/uploadfile', multipleUploads, (req, res) => {
+app.post('/detect', multipleUploads, (req, res) => {
    // check if successfully uploaded
   
     if (req.files) {
-        console.log("files uploaded", req.files['file1'][0].path)
+        console.log("files uploaded", req.files['trainFile'][0].path)
       
         let algo = req.body.algo_choice     
- const result = model.findAnomalies(req.files['file1'][0].path, req.files['file2'][0].path, algo)
- res.send({jsonData : result})
+        const result = model.findAnomalies(req.files['trainFile'][0].path, req.files['testFile'][0].path, algo)
+        res.send({jsonData : result})
       
    //     res.send(html of result?)
 
