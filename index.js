@@ -11,6 +11,7 @@ app.use(express.urlencoded({
 }))
 
 app.use(express.static('public'));
+//we want to use the model to find anomalies
 const model = require('./models/find_anomalies')
 app.set('view engine', 'ejs')
 var tabular = require('tabular-json')
@@ -40,24 +41,26 @@ var multipleUploads = upload.fields([{name: 'trainFile'}, {name: 'testFile'}])
 app.post('/detect', multipleUploads, (req, res) => {
    // check if successfully uploaded
   
-    if (req.files) {    
-      let algo = req.body.algo_choice     
+    if (req.files) { //if files uploaded, lets run anomalies finding algorithm placed in model
+      //hybrid or simple?   
+      let algo = req.body.algo_choice 
+      //get the anomalies json data structure returned by the algorithm, pass files and algo choice as param  
       const result = model.findAnomalies(req.files['trainFile'][0].path, req.files['testFile'][0].path, algo)
+      //return the json data of anomalies in response
       res.send(result)
     }
     res.end()
 })
-
+// make a post request to upload
 app.post('/detectHTML', multipleUploads, (req, res) => {
   // check if successfully uploaded
- 
    if (req.files) {
-       console.log("files uploaded", req.files['trainFile'][0].path)
-     
+    //   console.log("files uploaded", req.files['trainFile'][0].path)
+       //hybrid or simple?  
        let algo = req.body.algo_choice     
-       
+      //get the anomalies  as json data structure returned by the algorithm, pass files and algo choice as param  
       const result = model.findAnomalies(req.files['trainFile'][0].path, req.files['testFile'][0].path, algo)
-
+//define the format of table we want to create
 var opts = {
    dot: "/",
    separator: '  ',
@@ -65,8 +68,9 @@ var opts = {
 
    classes: {table: "table table-striped table-bordered"}
  };
+ //create table from result, using tabular npm
  var table = tabular.html(result, opts);
-
+//send the table as a response,  view will present
  res.send(table)
 
 
