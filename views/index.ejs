@@ -1,9 +1,12 @@
 <html lang="en">
   <%- include("./partials/head.ejs") %>
+
   <body>
     <br><br>
-      <div class="container">
-          <form action="/detect" id="post" method="post" enctype="multipart/form-data">
+      
+      <div class="column1">
+          <form target="resultFrame" action="/detect" id="post" method="post" enctype="multipart/form-data">
+          
             <div class="form-group">
               <label for="trainFile">Choose a train file:</label>
               <br>
@@ -14,27 +17,29 @@
                 <label for="testFile">Choose a test file:</label>
                 <br>
                 <input type="file" name="testFile" id="" required class="form-control">
-              </div>
-              <div class="form-group" >             
-                  <select class="algo_choice" name="algo_choice" required class="form-control">
-                    <option name="" value="" selected>Select Algorithm</option>
-                    <option name="Hybrid" value="Hybrid">Hybrid Anomaly Detector</option>
-                    <option name="Simple" value="Simple">Simple Anomaly Detector</option>
-                   
+            </div>
+            <div class="form-group" >             
+                <select class="algo_choice" name="algo_choice" required class="form-control">
+                  <option name="" value="" selected>Select Algorithm</option>
+                  <option name="Hybrid" value="Hybrid">Hybrid Anomaly Detector</option>
+                  <option name="Simple" value="Simple">Simple Anomaly Detector</option>
+                 
                 </select>
-
 
                   <button>
                       Upload
                   </button>
-              </div>
+            </div> 
+                
         </form>
       </div>
+      <div class="column2" >
+          <iframe name="resultFrame" width="900" height="500" frameborder="1px"></iframe>
+      </div>
       <form>
-      
         <br />
-</form>
-
+      </form>
+        <br><br>
         <%- include("./partials/footer.ejs") %>
 </body>
 </html>
