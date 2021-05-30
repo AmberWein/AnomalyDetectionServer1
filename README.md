@@ -70,4 +70,4 @@ The user can choose either simple (line regression) anomaly detector or a hybrid
 It receives two different csv files, one for learning and another for detection.
 
 ## UML diagram:
-![image](https://user-images.githubusercontent.com/63461543/120096053-fe5d0780-c131-11eb-89fd-8cdef5b1c717.png)
+![image](https://user-images.githubusercontent.com/63461543/120115001-7820df80-c18a-11eb-9f4e-66d4c0cc2384.png)
