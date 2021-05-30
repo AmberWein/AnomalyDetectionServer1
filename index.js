@@ -9,8 +9,6 @@ const app = express()
 app.use(express.urlencoded({
     extended: false
 }))
-//app.use(fileUpload({}))
-
 
 app.use(express.static('public'));
 const model = require('./models/find_anomalies')
@@ -42,18 +40,14 @@ var multipleUploads = upload.fields([{name: 'trainFile'}, {name: 'testFile'}])
 app.post('/detect', multipleUploads, (req, res) => {
    // check if successfully uploaded
   
-    if (req.files) {
-        console.log("files uploaded", req.files['trainFile'][0].path)
-      
-        let algo = req.body.algo_choice     
-        
- const result = model.findAnomalies(req.files['trainFile'][0].path, req.files['testFile'][0].path, algo)
- res.send(result)
-
-
+    if (req.files) {    
+      let algo = req.body.algo_choice     
+      const result = model.findAnomalies(req.files['trainFile'][0].path, req.files['testFile'][0].path, algo)
+      res.send(result)
     }
     res.end()
 })
+
 app.post('/detectHTML', multipleUploads, (req, res) => {
   // check if successfully uploaded
  
@@ -68,36 +62,12 @@ var opts = {
    dot: "/",
    separator: '  ',
    dateFormatter: function(date) {return date.toISOString().substr(0,10);},
-  // sort: ["name", "address/state", "address/city", "-contacts"],
 
    classes: {table: "table table-striped table-bordered"}
  };
  var table = tabular.html(result, opts);
- 
-//var html_show = '<!DOCTYPE html><html lang="en"><body>'
 
-// fs.writeFile('./views/anomalies_table.ejs', html_show, function (err,data) {
-//    if (err) {
-//      return console.log(err);
-//    }
-//    console.log(data);
-//  });
-//  fs.writeFile('./views/anomalies_table.ejs', table, function (err,data) {
-//    if (err) {
-//      return console.log(err);
-//    }
-//    console.log(data);
-//  });
-//  var end = '</body></html>'
-//  fs.writeFile('./views/anomalies_table.ejs', end, function (err,data) {
-//    if (err) {
-//      return console.log(err);
-//    }
-//    console.log(data);
-//  })
  res.send(table)
-
-  //  res.send({jsonData : result})
 
 
    }
