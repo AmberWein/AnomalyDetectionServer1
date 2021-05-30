@@ -59,8 +59,8 @@ For any representation of information in our site. It's porpuse is to make the d
 ## The API:
 GET / - this path representing the home page of the app in which the user can upload 2 csv files and choose an anomaly detection algorithm.  
 In addition, after uploading, on the right hand side the algorithm's results are presented.  
-POST /detect - in this request a client sends two csv files and an anomaly detection algorithm of his choice.
-POST /detectHTML - this path represent that the client have uploaded the required csv files and chose an anomaly detection algorithm.
+POST /detect - in this request a client sends two csv files and an anomaly detection algorithm of his choice and gets back json as a response.
+POST /detectHTML - in this request a client sends two csv files and an anomaly detection algorithm of his choice and gets back an html table as a response.
 
 ## The client side:
 The user sends a POST request to the controller which get from the server the detected anomalies according to the given files and the chosen algorithm.  
