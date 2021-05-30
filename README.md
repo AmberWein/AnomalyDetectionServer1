@@ -34,6 +34,7 @@ To do that, please follow the next steps:
 * "npm install --save multer"  
 3. Save the project's files on your computer.   
 That's all, now we are ready to start!
+Notice: if you wish to run Naftali.py, please pip install requests and change the path at the file to where you have saved the files in your computer.
 
 ## Manual:
 1. Download the repository.
