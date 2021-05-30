@@ -3,10 +3,8 @@
 
   <body>
     <br><br>
-      
       <div class="column1">
-          <form target="resultFrame" action="/detect" id="post" method="post" enctype="multipart/form-data">
-          
+          <form target="ifr" action="/detect" id="post" method="post" enctype="multipart/form-data">
             <div class="form-group">
               <label for="trainFile">Choose a train file:</label>
               <br>
@@ -26,20 +24,19 @@
                  
                 </select>
 
-                  <button>
-                      Upload
-                  </button>
-            </div> 
-                
+                <button>Upload</button>
+            </div>   
         </form>
       </div>
       <div class="column2" >
-          <iframe name="resultFrame" width="900" height="500" frameborder="1px"></iframe>
+          <iframe id="ifr" name="ifr" width="80%" height="70%" frameborder="1px"></iframe>
+                  
       </div>
-      <form>
-        <br />
-      </form>
+
         <br><br>
         <%- include("./partials/footer.ejs") %>
+
+
 </body>
+
 </html>
